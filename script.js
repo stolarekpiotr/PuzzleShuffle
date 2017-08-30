@@ -7,21 +7,29 @@ $(document).ready(function () {
     $("canvas").click(function (event) {
         let x = Math.floor(event.offsetX / imgClipWidth);
         let y = Math.floor(event.offsetY / imgClipHeight);
-        if(board[0]) {
-            console.log(x,y);
-            changePuzzles(x,y);
+        if (board[0]) {
+            console.log(x, y);
+            changePuzzles(x, y);
             draw();
         }
     });
 
-    function changePuzzles(x,y) {
-        if(x === blankX) {
-            if(y-1 === blankY) {
-                let blank = board[blankY][blankX];
-                board[y][x].set(blank.actualX, blank.actualY);
-                blank.set(x,y);
-            }
+    function changePuzzles(x, y) {
+        let id = posToId(x, y);
+        if (id - blankId === numberOfColumns
+            || blankId - id === numberOfColumns
+            || id - blankId === 1
+            || blankId - id === 1) {
+            let blank = board[blankId];
+            let imgId = board[id].imgClipId;
+            board[id].set(blank.imgClipId, true);
+            blank.set(imgId, false);
+            blankId = id;
         }
+    }
+
+    function posToId(x, y) {
+        return y * numberOfColumns + x;
     }
 
     let ctx = document.getElementById('canvas').getContext('2d');
@@ -33,8 +41,7 @@ $(document).ready(function () {
     let numberOfColumns = 4;
     let imgClipWidth = 0;
     let imgClipHeight = 0;
-    let blankX = 0;
-    let blankY = 0;
+    let blankId = 0;
 
     function handleFiles(e) {
         file = e.target.files[0];
@@ -54,45 +61,43 @@ $(document).ready(function () {
         ctx.canvas.height = img.height;
         imgClipWidth = img.width / numberOfColumns;
         imgClipHeight = img.height / numberOfRows;
-        blankX = 0;
-        blankY = 0;
+        blankId = 0;
         board = [];
-        for (let row = 0; row < numberOfRows; row++) {
-            board[row] = [];
-            for (let column = 0; column < numberOfColumns; column++) {
-                board[row][column] = new Puzzle(row, column);
-            }
+        for (let id = 0; id < numberOfRows * numberOfColumns; id++) {
+            board[id] = new Puzzle(id);
         }
-        board[0][0].isBlank = true;
+        board[0].isBlank = true;
         draw();
-        
+
     }
 
     function draw() {
-        ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
-        board.forEach(function (row) {
-            row.forEach(function (puzzle) {
-                puzzle.draw(ctx);
-            })
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        board.forEach(function (puzzle) {
+            puzzle.draw(ctx);
         })
     }
 
-    function Puzzle(targetRow, targetColumn) {
-        this.targetY = targetRow;
-        this.targetX = targetColumn;
-        this.actualY = targetRow;
-        this.actualX = targetColumn;
-        this.positionX = this.targetX * imgClipWidth;
-        this.positionY = this.targetY * imgClipHeight;
+    function Puzzle(id) {
+        this.puzzleId = id;
+        this.imgClipId = id;
         this.isBlank = false;
+        this.getX = function () {
+            return Math.floor(this.imgClipId % numberOfColumns);
+        }
+        this.getY = function () {
+            return Math.floor(this.imgClipId / numberOfColumns);
+        }
+        this.positionX = this.getX() * imgClipWidth;
+        this.positionY = this.getY() * imgClipHeight;
 
         this.onPosition = function () {
-            return this.targetX === this.actualX && this.targetY === this.actualY;
+            return this.puzzleId === this.imgClipId;
         }
 
         this.draw = function (ctx) {
-            let leftClip = this.actualX * imgClipWidth;
-            let topClip = this.actualY * imgClipHeight;
+            let leftClip = this.getX() * imgClipWidth;
+            let topClip = this.getY() * imgClipHeight;
             if (!this.isBlank) {
                 ctx.drawImage(img, leftClip, topClip, imgClipWidth, imgClipHeight, this.positionX, this.positionY, imgClipWidth, imgClipHeight);
             }
@@ -104,18 +109,12 @@ $(document).ready(function () {
             ctx.lineWidth = 2;         // thickness
             ctx.strokeRect(this.positionX, this.positionY, imgClipWidth, imgClipHeight);
             ctx.font = "30px Arial";
-            ctx.fillText(this.actualX + "/" + this.actualY,this.positionX,this.positionY+30);
-            ctx.fillText(this.targetX + "/" + this.targetY,this.positionX,this.positionY+60);
+            ctx.fillText(this.puzzleId + "/" + this.imgClipId, this.positionX, this.positionY + 30);
         }
 
-        this.log = function () {
-            console.log(targetRow, targetColumn);
-        }
-
-        this.set = function (x,y) {
-            this.actualX = x;
-            this.actualY = y;
-            this.isBlank = !this.blank;
+        this.set = function (id, blank) {
+            this.imgClipId = id;
+            this.isBlank = blank;
         }
     };
 });
