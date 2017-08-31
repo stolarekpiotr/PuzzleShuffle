@@ -1,25 +1,17 @@
 'use strict';
 
 $(document).ready(function () {
-    let input = document.getElementById('imgLoader');
-    input.addEventListener('change', handleFiles, false);
 
     $("canvas").click(function (event) {
         let x = Math.floor(event.offsetX / imgClipWidth);
         let y = Math.floor(event.offsetY / imgClipHeight);
-        if (board[0]) {
-            console.log(x, y);
-            changePuzzles(x, y);
-            draw();
-        }
+        changePuzzles(x, y);
+        draw();
     });
 
     function changePuzzles(x, y) {
         let id = posToId(x, y);
-        if (id - blankId === numberOfColumns
-            || blankId - id === numberOfColumns
-            || id - blankId === 1
-            || blankId - id === 1) {
+        if (isBlankNeighbor(id)) {
             let blank = board[blankId];
             let imgId = board[id].imgClipId;
             board[id].set(blank.imgClipId, true);
@@ -32,6 +24,15 @@ $(document).ready(function () {
         return y * numberOfColumns + x;
     }
 
+    function isBlankNeighbor(id) {
+        return id - blankId === numberOfColumns
+            || blankId - id === numberOfColumns
+            || id - blankId === 1
+            || blankId - id === 1;
+    }
+
+
+
     let ctx = document.getElementById('canvas').getContext('2d');
     let reader = new FileReader();
     let file;
@@ -43,32 +44,42 @@ $(document).ready(function () {
     let imgClipHeight = 0;
     let blankId = 0;
 
+    let input = document.getElementById('imgLoader');
+    input.addEventListener('change', handleFiles, false);
+
     function handleFiles(e) {
         file = e.target.files[0];
-        // this is to read the file
         reader.readAsDataURL(file);
     }
 
-    // this is to setup loading the image
     reader.onloadend = function () {
         img.src = reader.result;
     }
 
-    // load to image to get it's width/height
     img.onload = function () {
-        // scale canvas to image
+        setCanvas();
+        setImgClip();
+        blankId = 0;
+        setBoard();
+        draw();
+    }
+
+    function setCanvas() {
         ctx.canvas.width = img.width;
         ctx.canvas.height = img.height;
+    }
+
+    function setImgClip() {
         imgClipWidth = img.width / numberOfColumns;
         imgClipHeight = img.height / numberOfRows;
-        blankId = 0;
+    }
+
+    function setBoard() {
         board = [];
         for (let id = 0; id < numberOfRows * numberOfColumns; id++) {
             board[id] = new Puzzle(id);
         }
         board[0].isBlank = true;
-        draw();
-
     }
 
     function draw() {
