@@ -2,6 +2,8 @@
 
 $(document).ready(function () {
 
+    $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+
     $("canvas").click(function (event) {
         let x = Math.floor(event.offsetX / imgClipWidth);
         let y = Math.floor(event.offsetY / imgClipHeight);
@@ -46,6 +48,8 @@ $(document).ready(function () {
 
     let input = document.getElementById('imgLoader');
     input.addEventListener('change', handleFiles, false);
+
+    img.src = 'https://www.free-mandalas.net/wp-content/uploads/sites/14/nggallery/normal/dynamic/mandala-to-download-owl.jpg-nggid03485-ngg0dyn-220x220x100-00f0w010c011r110f110r010t010.jpg';
 
     function handleFiles(e) {
         file = e.target.files[0];
@@ -114,7 +118,6 @@ $(document).ready(function () {
     function getMoveUp() {
         return blankId - numberOfColumns;
     }
-
     function canMoveUp() {
         return blankId - numberOfColumns >= 0;
     }
@@ -122,7 +125,6 @@ $(document).ready(function () {
     function getMoveDown() {
         return blankId + numberOfColumns;
     }
-
     function canMoveDown() {
         return blankId < numberOfColumns * (numberOfRows - 1);
     }
@@ -130,7 +132,6 @@ $(document).ready(function () {
     function getMoveLeft() {
         return blankId - 1;
     }
-
     function canMoveLeft(id) {
         return blankId % numberOfColumns > 0;
     }
@@ -138,7 +139,6 @@ $(document).ready(function () {
     function getMoveRight() {
         return blankId + 1;
     }
-
     function canMoveRight(id) {
         return blankId % numberOfColumns < numberOfColumns - 1;
     }
