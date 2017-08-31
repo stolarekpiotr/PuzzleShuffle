@@ -8,6 +8,9 @@ $(document).ready(function () {
         let x = Math.floor(event.offsetX / imgClipWidth);
         let y = Math.floor(event.offsetY / imgClipHeight);
         let id = posToId(x, y);
+        if(debug) {
+            console.log("Click: ",x, y, id);
+        }
         changePuzzles(id);
         draw();
     });
@@ -45,13 +48,31 @@ $(document).ready(function () {
     let imgClipWidth = 0;
     let imgClipHeight = 0;
     let blankId = 0;
+    let debug = false;
+    let startImg = 'https://www.free-mandalas.net/wp-content/uploads/sites/14/nggallery/normal/dynamic/mandala-to-download-owl.jpg-nggid03485-ngg0dyn-220x220x100-00f0w010c011r110f110r010t010.jpg';
+
+    let resetButton = document.getElementById('resetButton');
+    resetButton.addEventListener('click', function() {
+        shuffleBoard();
+        draw();
+    });
 
     let input = document.getElementById('imgLoader');
     input.addEventListener('change', handleFiles, false);
 
-    img.src = 'https://www.free-mandalas.net/wp-content/uploads/sites/14/nggallery/normal/dynamic/mandala-to-download-owl.jpg-nggid03485-ngg0dyn-220x220x100-00f0w010c011r110f110r010t010.jpg';
+    let filenameLabel = document.getElementById('filename');
+
+    let urlInput = document.getElementById('imgUrl');
+    urlInput.addEventListener('change', function() {
+        img.src = urlInput.value;
+        input.form.reset();
+        filenameLabel.innerHTML = '';
+    });
+
+    img.src = startImg;
 
     function handleFiles(e) {
+        urlInput.value = '';
         file = e.target.files[0];
         reader.readAsDataURL(file);
     }
@@ -96,7 +117,7 @@ $(document).ready(function () {
 
     function shuffleBoard() {
         let moves = 0;
-        while (moves < 1000) {
+        while (moves < 100) {
             let direction = getDirection();
             let id = -1;
             if (direction === 0 && canMoveUp()) {
@@ -170,15 +191,17 @@ $(document).ready(function () {
             if (!this.isBlank) {
                 ctx.drawImage(img, leftClip, topClip, imgClipWidth, imgClipHeight, this.positionX, this.positionY, imgClipWidth, imgClipHeight);
             }
-            if (this.onPosition()) {
+            if (!debug) {
+                ctx.strokeStyle = 'rgb(0,0,0)';
+            } else if (this.onPosition()) {
                 ctx.strokeStyle = 'rgb(0,255,0)';  // some color/style
             } else {
                 ctx.strokeStyle = 'rgb(255, 0, 0)';  // some color/style
             }
             ctx.lineWidth = 2;         // thickness
             ctx.strokeRect(this.positionX, this.positionY, imgClipWidth, imgClipHeight);
-            ctx.font = "30px Arial";
-            ctx.fillText(this.puzzleId + "/" + this.imgClipId, this.positionX, this.positionY + 30);
+            //ctx.font = "30px Arial";
+            //ctx.fillText(this.puzzleId + "/" + this.imgClipId, this.positionX, this.positionY + 30);
         }
 
         this.set = function (id, blank) {
