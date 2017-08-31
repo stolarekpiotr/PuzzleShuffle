@@ -5,12 +5,12 @@ $(document).ready(function () {
     $("canvas").click(function (event) {
         let x = Math.floor(event.offsetX / imgClipWidth);
         let y = Math.floor(event.offsetY / imgClipHeight);
-        changePuzzles(x, y);
+        let id = posToId(x, y);
+        changePuzzles(id);
         draw();
     });
 
-    function changePuzzles(x, y) {
-        let id = posToId(x, y);
+    function changePuzzles(id) {
         if (isBlankNeighbor(id)) {
             let blank = board[blankId];
             let imgId = board[id].imgClipId;
@@ -80,6 +80,7 @@ $(document).ready(function () {
             board[id] = new Puzzle(id);
         }
         board[0].isBlank = true;
+        shuffleBoard();
     }
 
     function draw() {
@@ -87,6 +88,63 @@ $(document).ready(function () {
         board.forEach(function (puzzle) {
             puzzle.draw(ctx);
         })
+    }
+
+    function shuffleBoard() {
+        let moves = 0;
+        while (moves < 1000) {
+            let direction = getDirection();
+            let id = -1;
+            if (direction === 0 && canMoveUp()) {
+                id = getMoveUp();
+            } else if (direction === 1 && canMoveDown()) {
+                id = getMoveDown();
+            } else if (direction === 2 && canMoveLeft()) {
+                id = getMoveLeft();
+            } else if (direction === 3 && canMoveRight()) {
+                id = getMoveRight();
+            }
+            if (id !== -1) {
+                changePuzzles(id);
+                moves++;
+            }
+        }
+    }
+
+    function getMoveUp() {
+        return blankId - numberOfColumns;
+    }
+
+    function canMoveUp() {
+        return blankId - numberOfColumns >= 0;
+    }
+
+    function getMoveDown() {
+        return blankId + numberOfColumns;
+    }
+
+    function canMoveDown() {
+        return blankId < numberOfColumns * (numberOfRows - 1);
+    }
+
+    function getMoveLeft() {
+        return blankId - 1;
+    }
+
+    function canMoveLeft(id) {
+        return blankId % numberOfColumns > 0;
+    }
+
+    function getMoveRight() {
+        return blankId + 1;
+    }
+
+    function canMoveRight(id) {
+        return blankId % numberOfColumns < numberOfColumns - 1;
+    }
+
+    function getDirection() {
+        return Math.floor((Math.random() * 10)) % 4;
     }
 
     function Puzzle(id) {
