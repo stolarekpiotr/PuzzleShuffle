@@ -44,6 +44,26 @@ $(document).ready(function () {
     }
     //==========================================================
 
+    //==========================================================
+    //Settings input
+    //==========================================================
+    let numberOfRows = 4;
+    let numberOfColumns = 4;
+
+    let numberOfRowsInput = $("#numberOfRows");
+    numberOfRowsInput.val(numberOfRows);
+    numberOfRowsInput.change(function () {
+        numberOfRows = parseInt(numberOfRowsInput.val());
+        refreshBoard();
+    })
+
+    let numberOfColumnsInput = $("#numberOfColumns");
+    numberOfColumnsInput.val(numberOfColumns);
+    numberOfColumnsInput.change(function () {
+        numberOfColumns = parseInt(numberOfColumnsInput.val());
+        refreshBoard();
+    })
+    //==========================================================
 
     let ctx = canvas[0].getContext('2d');
     let reader = new FileReader();
@@ -53,10 +73,7 @@ $(document).ready(function () {
     let img = new Image();
     img.onload = function () {
         setCanvas();
-        setImgClip();
-        blankId = 0;
-        setBoard();
-        draw();
+        refreshBoard();
     }
     let startImg = 'https://www.free-mandalas.net/wp-content/uploads/sites/14/nggallery/normal/dynamic/mandala-to-download-owl.jpg-nggid03485-ngg0dyn-220x220x100-00f0w010c011r110f110r010t010.jpg';
     img.src = startImg;
@@ -64,10 +81,8 @@ $(document).ready(function () {
     let imgClipHeight = 0;
 
     let board = [];
-    let numberOfRows = 4;
-    let numberOfColumns = 4;
     let blankId = 0;
-    
+
     let debug = false;
 
     let resetButton = $('#resetButton');
@@ -110,6 +125,13 @@ $(document).ready(function () {
         imgClipHeight = img.height / numberOfRows;
     }
 
+    function refreshBoard() {
+        setImgClip();
+        blankId = 0;
+        setBoard();
+        draw();
+    }
+
     function setBoard() {
         board = [];
         for (let id = 0; id < numberOfRows * numberOfColumns; id++) {
@@ -128,7 +150,7 @@ $(document).ready(function () {
 
     function shuffleBoard() {
         let moves = 0;
-        while (moves < 100) {
+        while (moves < 1000) {
             let direction = getDirection();
             let id = -1;
             if (direction === 0 && canMoveUp()) {

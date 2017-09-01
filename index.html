@@ -13,9 +13,8 @@
 <body>
     <div class="container">
         <h1 class="text-center my-5 text-primary"><a href="https://github.com/stolarekpiotr/" class="fa fa-github" data-toggle="tooltip" data-placement="top" title="Przejdź do projektu na GitHubie">   PuzzleShuffle</a></h1>
-        <div class="collapse" id="urlCollapse">
+        <div class="collapse mb-2" id="urlCollapse">
             <div class="card card-body">
-
                 <div class="d-flex justify-content-center mb-2">
                     <!-- <input class="mx-2 btn btn-outline-secondary" type="file" id="imgLoader" accept="image/x-png,image/gif,image/jpeg"/> -->
                     <form>
@@ -32,12 +31,26 @@
                     <span class="input-group-addon bg-info text-light" id="imgUrlLabel">Image URL:</span>
                     <input type="url" class="form-control" id="imgUrl" aria-describedby="ImgUrl">
                 </div>
-
-
+            </div>
+        </div>
+        <div class="collapse mb-2" id="settingsCollapse">
+            <div class="card card-body">
+                <div class="d-flex justify-content-center mb-2">
+                    <div class="input-group">
+                        <span class="input-group-addon bg-info text-light mx-2" id="numberOfRowsLabel"># of rows</span>
+                        <input id="numberOfRows" type="number" min="3" max="6" class="form-control" aria-label="Number of Rows" aria-describedby="numberOfRowsLabel">
+                    </div>
+                    <br>
+                    <div class="input-group">
+                        <span class="input-group-addon bg-info text-light mx-2" id="numberOfColumnsLabel"># of columns</span>
+                        <input id="numberOfColumns" type="number" min="3" max="6" class="form-control" aria-label="Number of Columns" aria-describedby="numberOfColumnsLabel">
+                    </div>
+                </div>
             </div>
         </div>
         <div class="d-flex justify-content-center my-2">
             <a class="btn btn-primary mx-2" data-toggle="collapse" href="#urlCollapse" aria-expanded="false" aria-controls="urlCollapse">Load image</a>
+            <a class="btn btn-primary mx-2" data-toggle="collapse" href="#settingsCollapse" aria-expanded="false" aria-controls="urlCollapse">Settings</a>
             <button id="resetButton" type="button" class="btn btn-outline-secondary mx-2">RESET</button>
             <button id="showImage" type="button" class="btn btn-outline-secondary mx-2">SHOW IMAGE</button>
         </div>
