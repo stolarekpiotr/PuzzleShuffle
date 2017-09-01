@@ -1,28 +1,35 @@
 'use strict';
 
 $(document).ready(function () {
-
+    //==========================================================
+    //Bootstrap tooltip start
+    //==========================================================
     $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+    //==========================================================
 
-    $("canvas").click(function (event) {
+    //==========================================================
+    //Click on canvas handle
+    //==========================================================
+    let canvas = $("canvas");
+    canvas.click(function (event) {
         let x = Math.floor(event.offsetX / imgClipWidth);
         let y = Math.floor(event.offsetY / imgClipHeight);
         let id = posToId(x, y);
-        if(debug) {
-            console.log("Click: ",x, y, id);
+        if (debug) {
+            console.log("Click: ", x, y, id);
         }
-        changePuzzles(id);
+        if (isBlankNeighbor(id)) {
+            changePuzzles(id);
+        }
         draw();
     });
 
     function changePuzzles(id) {
-        if (isBlankNeighbor(id)) {
-            let blank = board[blankId];
-            let imgId = board[id].imgClipId;
-            board[id].set(blank.imgClipId, true);
-            blank.set(imgId, false);
-            blankId = id;
-        }
+        let blank = board[blankId];
+        let imgId = board[id].imgClipId;
+        board[id].set(blank.imgClipId, true);
+        blank.set(imgId, false);
+        blankId = id;
     }
 
     function posToId(x, y) {
@@ -35,60 +42,15 @@ $(document).ready(function () {
             || id - blankId === 1
             || blankId - id === 1;
     }
+    //==========================================================
 
 
-
-    let ctx = document.getElementById('canvas').getContext('2d');
+    let ctx = canvas[0].getContext('2d');
     let reader = new FileReader();
-    let file;
-    let img = new Image();
-    let board = []; //[rows][columns]
-    let numberOfRows = 4;
-    let numberOfColumns = 4;
-    let imgClipWidth = 0;
-    let imgClipHeight = 0;
-    let blankId = 0;
-    let debug = false;
-    let startImg = 'https://www.free-mandalas.net/wp-content/uploads/sites/14/nggallery/normal/dynamic/mandala-to-download-owl.jpg-nggid03485-ngg0dyn-220x220x100-00f0w010c011r110f110r010t010.jpg';
-
-    let resetButton = document.getElementById('resetButton');
-    resetButton.addEventListener('click', function() {
-        shuffleBoard();
-        draw();
-    });
-
-    let showImageButton = document.getElementById('showImage');
-    showImageButton.addEventListener('mouseover', function() {
-        ctx.drawImage(img,0,0);
-    });
-    showImageButton.addEventListener('mouseout', function() {
-        draw();
-    });
-
-    let input = document.getElementById('imgLoader');
-    input.addEventListener('change', handleFiles, false);
-
-    let filenameLabel = document.getElementById('filename');
-
-    let urlInput = document.getElementById('imgUrl');
-    urlInput.addEventListener('change', function() {
-        img.src = urlInput.value;
-        input.form.reset();
-        filenameLabel.innerHTML = '';
-    });
-
-    img.src = startImg;
-
-    function handleFiles(e) {
-        urlInput.value = '';
-        file = e.target.files[0];
-        reader.readAsDataURL(file);
-    }
-
     reader.onloadend = function () {
         img.src = reader.result;
     }
-
+    let img = new Image();
     img.onload = function () {
         setCanvas();
         setImgClip();
@@ -96,6 +58,47 @@ $(document).ready(function () {
         setBoard();
         draw();
     }
+    let startImg = 'https://www.free-mandalas.net/wp-content/uploads/sites/14/nggallery/normal/dynamic/mandala-to-download-owl.jpg-nggid03485-ngg0dyn-220x220x100-00f0w010c011r110f110r010t010.jpg';
+    img.src = startImg;
+    let imgClipWidth = 0;
+    let imgClipHeight = 0;
+
+    let board = [];
+    let numberOfRows = 4;
+    let numberOfColumns = 4;
+    let blankId = 0;
+    
+    let debug = false;
+
+    let resetButton = $('#resetButton');
+    resetButton.click(function () {
+        shuffleBoard();
+        draw();
+    });
+
+    let showImageButton = $('#showImage');
+    showImageButton.mouseover(function () {
+        ctx.drawImage(img, 0, 0);
+    });
+    showImageButton.mouseout(function () {
+        draw();
+    });
+
+    let input = $('#imgLoader');
+    input.change(function (e) {
+        urlInput.val('');
+        let file = e.target.files[0];
+        reader.readAsDataURL(file);
+    });
+
+    let filenameLabel = $('#filename');
+
+    let urlInput = $('#imgUrl');
+    urlInput.change(function () {
+        img.src = urlInput.val();
+        input[0].form.reset();
+        filenameLabel.html('');
+    });
 
     function setCanvas() {
         ctx.canvas.width = img.width;
@@ -210,7 +213,7 @@ $(document).ready(function () {
                 ctx.strokeStyle = 'rgb(255, 0, 0)';
             }
             ctx.lineWidth = 2;         // thickness
-            ctx.strokeRect(this.positionX+1, this.positionY+1, imgClipWidth-2, imgClipHeight-2);
+            ctx.strokeRect(this.positionX + 1, this.positionY + 1, imgClipWidth - 2, imgClipHeight - 2);
             //ctx.font = "30px Arial";
             //ctx.fillText(this.puzzleId + "/" + this.imgClipId, this.positionX, this.positionY + 30);
         }
