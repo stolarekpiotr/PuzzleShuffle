@@ -57,6 +57,14 @@ $(document).ready(function () {
         draw();
     });
 
+    let showImageButton = document.getElementById('showImage');
+    showImageButton.addEventListener('mouseover', function() {
+        ctx.drawImage(img,0,0);
+    });
+    showImageButton.addEventListener('mouseout', function() {
+        draw();
+    });
+
     let input = document.getElementById('imgLoader');
     input.addEventListener('change', handleFiles, false);
 
@@ -198,8 +206,11 @@ $(document).ready(function () {
             } else {
                 ctx.strokeStyle = 'rgb(255, 0, 0)';  // some color/style
             }
+            if (this.isBlank) {
+                ctx.strokeStyle = 'rgb(255, 0, 0)';
+            }
             ctx.lineWidth = 2;         // thickness
-            ctx.strokeRect(this.positionX, this.positionY, imgClipWidth, imgClipHeight);
+            ctx.strokeRect(this.positionX+1, this.positionY+1, imgClipWidth-2, imgClipHeight-2);
             //ctx.font = "30px Arial";
             //ctx.fillText(this.puzzleId + "/" + this.imgClipId, this.positionX, this.positionY + 30);
         }
