@@ -12,11 +12,10 @@
 
 <body>
     <div class="container">
-        <h1 class="text-center my-5 text-primary"><a href="https://github.com/stolarekpiotr/" class="fa fa-github" data-toggle="tooltip" data-placement="top" title="Przejdź do projektu na GitHubie">   PuzzleShuffle</a></h1>
+        <h1 class="text-center my-5 text-primary"><a href="https://github.com/stolarekpiotr/puzzleshuffle" class="fa fa-github" data-toggle="tooltip" data-placement="top" title="Go to GitHub project">   PuzzleShuffle</a></h1>
         <div class="collapse mb-2" id="urlCollapse">
             <div class="card card-body">
                 <div class="d-flex justify-content-center mb-2">
-                    <!-- <input class="mx-2 btn btn-outline-secondary" type="file" id="imgLoader" accept="image/x-png,image/gif,image/jpeg"/> -->
                     <form>
                         <span>
                             <input  type="file" style="visibility:hidden; width: 1px;" id='imgLoader' accept="image/x-png,image/gif,image/jpeg" onchange="$(this).parent().find('span').html($(this).val().replace('C:\\fakepath\\', ''))"  />
@@ -55,7 +54,9 @@
             <button id="showImage" type="button" class="btn btn-outline-secondary mx-2">SHOW IMAGE</button>
         </div>
 
-
+        <div id="winAlert" class="alert alert-success" role="alert">
+            Congratulations! Pick new image, reset or/and change settings using buttons above.
+        </div>
         <canvas class="d-block mx-auto" width="700" height="500" id="canvas"></canvas>
         <svg role="img" width="100" height="100" class="mx-auto d-block m-3" data-toggle="tooltip" data-placement="left" title="TRIANGLE">
             <title>TRIANGLE</title>

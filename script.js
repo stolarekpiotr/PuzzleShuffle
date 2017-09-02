@@ -2,7 +2,7 @@
 
 $(document).ready(function () {
     //==========================================================
-    //Bootstrap tooltip start
+    //Bootstrap tooltip initialize
     //==========================================================
     $("body").tooltip({ selector: '[data-toggle=tooltip]' });
     //==========================================================
@@ -21,16 +21,11 @@ $(document).ready(function () {
         if (isBlankNeighbor(id)) {
             changePuzzles(id);
         }
+        if (isWin()) {
+            winAlert.show();
+        }
         draw();
     });
-
-    function changePuzzles(id) {
-        let blank = board[blankId];
-        let imgId = board[id].imgClipId;
-        board[id].set(blank.imgClipId, true);
-        blank.set(imgId, false);
-        blankId = id;
-    }
 
     function posToId(x, y) {
         return y * numberOfColumns + x;
@@ -65,26 +60,9 @@ $(document).ready(function () {
     })
     //==========================================================
 
-    let ctx = canvas[0].getContext('2d');
-    let reader = new FileReader();
-    reader.onloadend = function () {
-        img.src = reader.result;
-    }
-    let img = new Image();
-    img.onload = function () {
-        setCanvas();
-        refreshBoard();
-    }
-    let startImg = 'https://www.free-mandalas.net/wp-content/uploads/sites/14/nggallery/normal/dynamic/mandala-to-download-owl.jpg-nggid03485-ngg0dyn-220x220x100-00f0w010c011r110f110r010t010.jpg';
-    img.src = startImg;
-    let imgClipWidth = 0;
-    let imgClipHeight = 0;
-
-    let board = [];
-    let blankId = 0;
-
-    let debug = false;
-
+    //==========================================================
+    //Reset and Show button
+    //==========================================================
     let resetButton = $('#resetButton');
     resetButton.click(function () {
         shuffleBoard();
@@ -98,7 +76,11 @@ $(document).ready(function () {
     showImageButton.mouseout(function () {
         draw();
     });
+    //==========================================================
 
+    //==========================================================
+    //File inputs and process
+    //==========================================================
     let input = $('#imgLoader');
     input.change(function (e) {
         urlInput.val('');
@@ -114,6 +96,20 @@ $(document).ready(function () {
         input[0].form.reset();
         filenameLabel.html('');
     });
+
+    let reader = new FileReader();
+    reader.onloadend = function () {
+        img.src = reader.result;
+    }
+    let img = new Image();
+    img.onload = function () {
+        setCanvas();
+        refreshBoard();
+    }
+    let startImg = 'https://www.free-mandalas.net/wp-content/uploads/sites/14/nggallery/normal/dynamic/mandala-to-download-owl.jpg-nggid03485-ngg0dyn-220x220x100-00f0w010c011r110f110r010t010.jpg';
+    img.src = startImg;
+    let imgClipWidth = 0;
+    let imgClipHeight = 0;
 
     function setCanvas() {
         ctx.canvas.width = img.width;
@@ -131,6 +127,20 @@ $(document).ready(function () {
         setBoard();
         draw();
     }
+    //==========================================================
+
+    let winAlert = $('#winAlert');
+    winAlert.hide();
+
+    //==========================================================
+    //Game logic
+    //
+
+    let ctx = canvas[0].getContext('2d');
+    let board = [];
+    let blankId = 0;
+
+    let debug = false;
 
     function setBoard() {
         board = [];
@@ -148,7 +158,16 @@ $(document).ready(function () {
         })
     }
 
+    function changePuzzles(id) {
+        let blank = board[blankId];
+        let imgId = board[id].imgClipId;
+        board[id].set(blank.imgClipId, true);
+        blank.set(imgId, false);
+        blankId = id;
+    }
+
     function shuffleBoard() {
+        winAlert.hide();
         let moves = 0;
         while (moves < 1000) {
             let direction = getDirection();
@@ -201,6 +220,22 @@ $(document).ready(function () {
         return Math.floor((Math.random() * 10)) % 4;
     }
 
+    function isWin() {
+        let flag = true;
+        board.forEach(function (puzzle) {
+            if (!puzzle.onPosition()) {
+                flag = false;
+            }
+        }) 
+        return flag;
+    }
+
+    //==========================================================
+
+
+    //==========================================================
+    //Puzzle class
+    //==========================================================
     function Puzzle(id) {
         this.puzzleId = id;
         this.imgClipId = id;
@@ -245,4 +280,5 @@ $(document).ready(function () {
             this.isBlank = blank;
         }
     };
+    //==========================================================
 });
